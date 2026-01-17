@@ -53,6 +53,38 @@
       "description": "Choose the period of time to analyze.",
       "title": "Time Range"
     },
+    "er_client_name": {
+      "additionalProperties": false,
+      "properties": {
+        "data_source": {
+          "$ref": "#/$defs/EarthRangerConnection",
+          "title": "",
+          "description": "Select one of your configured data sources."
+        }
+      },
+      "required": [
+        "data_source"
+      ],
+      "type": "object",
+      "title": "Select EarthRanger Data Source"
+    },
+    "filtered_weather_station": {
+      "additionalProperties": false,
+      "properties": {
+        "values": {
+          "default": null,
+          "items": {
+            "type": "string"
+          },
+          "title": "Weather Station",
+          "type": "array",
+          "description": "Select the interested weather stations by subject names. If None, all weather stations in the subject group will be included"
+        }
+      },
+      "required": [],
+      "type": "object",
+      "title": "Select Weather Stations"
+    },
     "groupers": {
       "additionalProperties": false,
       "properties": {
@@ -78,53 +110,6 @@
       "required": [],
       "title": "Set Groupers"
     },
-    "er_client_name": {
-      "additionalProperties": false,
-      "properties": {
-        "data_source": {
-          "$ref": "#/$defs/EarthRangerConnection",
-          "title": "",
-          "description": "Select one of your configured data sources."
-        }
-      },
-      "required": [
-        "data_source"
-      ],
-      "type": "object",
-      "title": "Select EarthRanger Data Source"
-    },
-    "normalize_obs_details": {
-      "additionalProperties": false,
-      "properties": {
-        "sort_columns": {
-          "default": true,
-          "title": "Sort Columns",
-          "type": "boolean",
-          "description": "Sort new columns alphabetically.",
-          "ecoscope:advanced": true
-        }
-      },
-      "required": [],
-      "type": "object",
-      "title": "Normalize Observation Details"
-    },
-    "filtered_weather_station": {
-      "additionalProperties": false,
-      "properties": {
-        "values": {
-          "default": null,
-          "items": {
-            "type": "string"
-          },
-          "title": "Values",
-          "type": "array",
-          "description": "The values to keep. If None, no filtering is applied."
-        }
-      },
-      "required": [],
-      "type": "object",
-      "title": "Select Weather Stations"
-    },
     "persist_observations": {
       "additionalProperties": false,
       "properties": {
@@ -146,17 +131,10 @@
           "uniqueItems": true
         },
         "filename_prefix": {
-          "default": null,
+          "default": "observations",
           "title": "Filename Prefix",
           "type": "string",
           "description": "            Optional filename prefix to persist text to within the `root_path`.\n            We will always add a suffix based on the dataframe content hash to avoid duplicates.\n            ",
-          "ecoscope:advanced": true
-        },
-        "sanitize": {
-          "default": false,
-          "title": "Sanitize",
-          "type": "boolean",
-          "description": "Whether to sanitize the dataframe for Arrow compatibility before persisting, recommended when including event or observation details",
           "ecoscope:advanced": true
         }
       },
@@ -168,17 +146,10 @@
       "additionalProperties": false,
       "properties": {
         "filename_prefix": {
-          "default": null,
+          "default": "daily_summary",
           "title": "Filename Prefix",
           "type": "string",
           "description": "            Optional filename prefix to persist text to within the `root_path`.\n            We will always add a suffix based on the dataframe content hash to avoid duplicates.\n            ",
-          "ecoscope:advanced": true
-        },
-        "sanitize": {
-          "default": false,
-          "title": "Sanitize",
-          "type": "boolean",
-          "description": "Whether to sanitize the dataframe for Arrow compatibility before persisting, recommended when including event or observation details",
           "ecoscope:advanced": true
         }
       },
@@ -214,6 +185,19 @@
         "utc"
       ],
       "title": "TimezoneInfo",
+      "type": "object"
+    },
+    "EarthRangerConnection": {
+      "properties": {
+        "name": {
+          "title": "Data Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "EarthRangerConnection",
       "type": "object"
     },
     "TemporalGrouper": {
@@ -263,19 +247,6 @@
       ],
       "title": "Category",
       "type": "string"
-    },
-    "EarthRangerConnection": {
-      "properties": {
-        "name": {
-          "title": "Data Source",
-          "type": "string"
-        }
-      },
-      "required": [
-        "name"
-      ],
-      "title": "EarthRangerConnection",
-      "type": "object"
     }
   },
   "uiSchema": {
@@ -295,26 +266,25 @@
     "persist_observations": {
       "ui:order": [
         "filetypes",
-        "filename_prefix",
-        "sanitize"
-      ]
-    },
-    "persist_daily_summary": {
-      "ui:order": [
-        "filename_prefix",
-        "sanitize"
+        "filename_prefix"
       ]
     },
     "ui:order": [
       "workflow_details",
       "time_range",
-      "groupers",
       "er_client_name",
-      "normalize_obs_details",
       "filtered_weather_station",
+      "groupers",
       "persist_observations",
       "persist_daily_summary"
-    ]
+    ],
+    "Download Attachments": {
+      "download_attachments": {
+        "ui:options": {
+          "label": false
+        }
+      }
+    }
   },
   "additionalProperties": false
 }

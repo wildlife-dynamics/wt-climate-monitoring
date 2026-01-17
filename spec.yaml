@@ -15,6 +15,15 @@ rjsf-overrides:
       {"const": "weather_station", "title": "Weather Station"},
     ]
 
+  properties:
+    persist_observations.properties.filename_prefix.default: "observations"
+    persist_daily_summary.properties.filename_prefix.default: "daily_summary"
+    filtered_weather_station.properties.values.title: "Weather Station"
+    filtered_weather_station.properties.values.description: >-
+      Select the interested weather stations by subject names. If None, all weather stations in the subject group will be included
+
+  uiSchema:
+    Download Attachments.download_attachments.ui:options.label: false
 
 workflow:
   - name: Set Workflow Details
@@ -32,10 +41,6 @@ workflow:
     task: get_timezone_from_time_range
     partial:
       time_range: ${{ workflow.time_range.return }}
-
-  - name: Set Groupers
-    id: groupers
-    task: set_groupers
 
   - name: Select EarthRanger Data Source
     id: er_client_name
@@ -87,6 +92,7 @@ workflow:
       df: ${{ workflow.convert_to_user_timezone.return }}
       column: "observation_details"
       skip_if_not_exists: false
+      sort_columns: true
 
   - name: Remove Column Prefix Observation Details
     id: drop_obs_details_prefix
@@ -112,6 +118,10 @@ workflow:
       df: ${{ workflow.extract_date.return }}
       column: "weather_station"
 
+  - name: Set Groupers
+    id: groupers
+    task: set_groupers
+
   - name: Add temporal index
     id: df_with_temporal_index
     task: add_temporal_index
@@ -134,6 +144,7 @@ workflow:
     task: persist_df_wrapper
     partial:
       root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+      sanitize: true
     mapvalues:
       argnames: df
       argvalues: ${{ workflow.split_weather_groups.return }}
@@ -163,6 +174,7 @@ workflow:
     partial:
       root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
       filetypes: ["csv"]
+      sanitize: false
     mapvalues:
       argnames: df
       argvalues: ${{ workflow.daily_weather.return }}

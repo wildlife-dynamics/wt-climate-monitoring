@@ -132,29 +132,6 @@ get_timezone = (
 
 
 # %% [markdown]
-# ## Set Groupers
-
-# %%
-# parameters
-
-groupers_params = dict(
-    groupers=...,
-)
-
-# %%
-# call the task
-
-
-groupers = (
-    set_groupers.set_task_instance_id("groupers")
-    .handle_errors()
-    .with_tracing()
-    .partial(**groupers_params)
-    .call()
-)
-
-
-# %% [markdown]
 # ## Select EarthRanger Data Source
 
 # %%
@@ -301,9 +278,7 @@ convert_to_user_timezone = (
 # %%
 # parameters
 
-normalize_obs_details_params = dict(
-    sort_columns=...,
-)
+normalize_obs_details_params = dict()
 
 # %%
 # call the task
@@ -317,6 +292,7 @@ normalize_obs_details = (
         df=convert_to_user_timezone,
         column="observation_details",
         skip_if_not_exists=False,
+        sort_columns=True,
         **normalize_obs_details_params,
     )
     .call()
@@ -402,6 +378,29 @@ filtered_weather_station = (
 
 
 # %% [markdown]
+# ## Set Groupers
+
+# %%
+# parameters
+
+groupers_params = dict(
+    groupers=...,
+)
+
+# %%
+# call the task
+
+
+groupers = (
+    set_groupers.set_task_instance_id("groupers")
+    .handle_errors()
+    .with_tracing()
+    .partial(**groupers_params)
+    .call()
+)
+
+
+# %% [markdown]
 # ## Add temporal index
 
 # %%
@@ -462,7 +461,6 @@ persist_observations_params = dict(
     filename=...,
     filetypes=...,
     filename_prefix=...,
-    sanitize=...,
 )
 
 # %%
@@ -475,6 +473,7 @@ persist_observations = (
     .with_tracing()
     .partial(
         root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+        sanitize=True,
         **persist_observations_params,
     )
     .mapvalues(argnames=["df"], argvalues=split_weather_groups)
@@ -527,7 +526,6 @@ daily_weather = (
 persist_daily_summary_params = dict(
     filename=...,
     filename_prefix=...,
-    sanitize=...,
 )
 
 # %%
@@ -541,6 +539,7 @@ persist_daily_summary = (
     .partial(
         root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
         filetypes=["csv"],
+        sanitize=False,
         **persist_daily_summary_params,
     )
     .mapvalues(argnames=["df"], argvalues=daily_weather)

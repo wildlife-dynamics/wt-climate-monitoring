@@ -18,23 +18,14 @@ class WorkflowDetails(BaseModel):
     description: Optional[str] = Field("", title="Workflow Description")
 
 
-class NormalizeObsDetails(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    sort_columns: Optional[bool] = Field(
-        True, description="Sort new columns alphabetically.", title="Sort Columns"
-    )
-
-
 class FilteredWeatherStation(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
     values: Optional[List[str]] = Field(
         None,
-        description="The values to keep. If None, no filtering is applied.",
-        title="Values",
+        description="Select the interested weather stations by subject names. If None, all weather stations in the subject group will be included",
+        title="Weather Station",
     )
 
 
@@ -52,14 +43,9 @@ class PersistObservations(BaseModel):
         ["csv"], description="The output format", title="Filetypes"
     )
     filename_prefix: Optional[str] = Field(
-        None,
+        "observations",
         description="            Optional filename prefix to persist text to within the `root_path`.\n            We will always add a suffix based on the dataframe content hash to avoid duplicates.\n            ",
         title="Filename Prefix",
-    )
-    sanitize: Optional[bool] = Field(
-        False,
-        description="Whether to sanitize the dataframe for Arrow compatibility before persisting, recommended when including event or observation details",
-        title="Sanitize",
     )
 
 
@@ -68,14 +54,9 @@ class PersistDailySummary(BaseModel):
         extra="forbid",
     )
     filename_prefix: Optional[str] = Field(
-        None,
+        "daily_summary",
         description="            Optional filename prefix to persist text to within the `root_path`.\n            We will always add a suffix based on the dataframe content hash to avoid duplicates.\n            ",
         title="Filename Prefix",
-    )
-    sanitize: Optional[bool] = Field(
-        False,
-        description="Whether to sanitize the dataframe for Arrow compatibility before persisting, recommended when including event or observation details",
-        title="Sanitize",
     )
 
 
@@ -86,16 +67,16 @@ class TimezoneInfo(BaseModel):
     utc: str = Field(..., title="Utc")
 
 
+class EarthRangerConnection(BaseModel):
+    name: str = Field(..., title="Data Source")
+
+
 class TemporalGrouper(RootModel[str]):
     root: str = Field(..., title="Time")
 
 
 class ValueGrouper(RootModel[str]):
     root: str = Field(..., title="Category")
-
-
-class EarthRangerConnection(BaseModel):
-    name: str = Field(..., title="Data Source")
 
 
 class TimeRange(BaseModel):
@@ -107,6 +88,15 @@ class TimeRange(BaseModel):
     timezone: Optional[TimezoneInfo] = Field(None, title="Timezone")
 
 
+class ErClientName(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    data_source: EarthRangerConnection = Field(
+        ..., description="Select one of your configured data sources.", title=""
+    )
+
+
 class Groupers(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -115,15 +105,6 @@ class Groupers(BaseModel):
         None,
         description="            Specify how the data should be grouped to create the views for your dashboard or persisted data.\n            This field is optional; if left blank, all the data will appear in a single view.\n            ",
         title=" ",
-    )
-
-
-class ErClientName(BaseModel):
-    model_config = ConfigDict(
-        extra="forbid",
-    )
-    data_source: EarthRangerConnection = Field(
-        ..., description="Select one of your configured data sources.", title=""
     )
 
 
@@ -139,16 +120,13 @@ class FormData(BaseModel):
     time_range: Optional[TimeRange] = Field(
         None, description="Choose the period of time to analyze.", title="Time Range"
     )
-    groupers: Optional[Groupers] = Field(None, title="Set Groupers")
     er_client_name: Optional[ErClientName] = Field(
         None, title="Select EarthRanger Data Source"
-    )
-    normalize_obs_details: Optional[NormalizeObsDetails] = Field(
-        None, title="Normalize Observation Details"
     )
     filtered_weather_station: Optional[FilteredWeatherStation] = Field(
         None, title="Select Weather Stations"
     )
+    groupers: Optional[Groupers] = Field(None, title="Set Groupers")
     persist_observations: Optional[PersistObservations] = Field(
         None, title="Persist Observations"
     )

@@ -18,7 +18,6 @@ from ecoscope_workflows_core.tasks.filter import (
     get_timezone_from_time_range as get_timezone_from_time_range,
 )
 from ecoscope_workflows_core.tasks.filter import set_time_range as set_time_range
-from ecoscope_workflows_core.tasks.groupby import set_groupers as set_groupers
 from ecoscope_workflows_core.tasks.io import set_er_connection as set_er_connection
 from ecoscope_workflows_core.testing import create_task_magicmock  # 🧪
 
@@ -26,6 +25,7 @@ get_subjectgroup_observations = create_task_magicmock(  # 🧪
     anchor="ecoscope_workflows_ext_ecoscope.tasks.io",  # 🧪
     func_name="get_subjectgroup_observations",  # 🧪
 )  # 🧪
+from ecoscope_workflows_core.tasks.groupby import set_groupers as set_groupers
 from ecoscope_workflows_core.tasks.groupby import split_groups as split_groups
 from ecoscope_workflows_core.tasks.io import persist_text as persist_text
 from ecoscope_workflows_core.tasks.results import (
@@ -96,15 +96,6 @@ def main(params: Params):
         .handle_errors()
         .with_tracing()
         .partial(time_range=time_range, **(params_dict.get("get_timezone") or {}))
-        .call()
-    )
-
-    groupers = (
-        set_groupers.validate()
-        .set_task_instance_id("groupers")
-        .handle_errors()
-        .with_tracing()
-        .partial(**(params_dict.get("groupers") or {}))
         .call()
     )
 
@@ -196,6 +187,7 @@ def main(params: Params):
             df=convert_to_user_timezone,
             column="observation_details",
             skip_if_not_exists=False,
+            sort_columns=True,
             **(params_dict.get("normalize_obs_details") or {}),
         )
         .call()
@@ -243,6 +235,15 @@ def main(params: Params):
         .call()
     )
 
+    groupers = (
+        set_groupers.validate()
+        .set_task_instance_id("groupers")
+        .handle_errors()
+        .with_tracing()
+        .partial(**(params_dict.get("groupers") or {}))
+        .call()
+    )
+
     df_with_temporal_index = (
         add_temporal_index.validate()
         .set_task_instance_id("df_with_temporal_index")
@@ -279,6 +280,7 @@ def main(params: Params):
         .with_tracing()
         .partial(
             root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            sanitize=True,
             **(params_dict.get("persist_observations") or {}),
         )
         .mapvalues(argnames=["df"], argvalues=split_weather_groups)
@@ -317,6 +319,7 @@ def main(params: Params):
         .partial(
             root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
             filetypes=["csv"],
+            sanitize=False,
             **(params_dict.get("persist_daily_summary") or {}),
         )
         .mapvalues(argnames=["df"], argvalues=daily_weather)
