@@ -14,7 +14,7 @@ base:
     groupers:
       groupers: []
     persist_daily_summary:
-      filename: "weather_summary"
+      filename_prefix: "weather_summary"
 
 weather-station:
   name: Weather Station
