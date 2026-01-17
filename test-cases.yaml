@@ -3,8 +3,8 @@ base:
   mock_io: false
   params:
     workflow_details:
-      name: "Weather Workflow"
-      description: "A workflow for weather monitoring."
+      name: "Climate Workflow"
+      description: "A workflow for climate monitoring."
     er_client_name:
       data_source:
         name: "gmmf"
@@ -16,15 +16,15 @@ base:
     groupers:
       groupers: []
     persist_daily_summary:
-      filename_prefix: "weather_summary"
+      filename_prefix: "climate_summary"
 
 weather-station:
   name: Weather Station
   mock_io: false
   params:
     workflow_details:
-      name: "Weather Workflow"
-      description: "A workflow for weather monitoring."
+      name: "Climate Workflow"
+      description: "A workflow for climate monitoring."
     er_client_name:
       data_source:
         name: "gmmf"
