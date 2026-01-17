@@ -18,6 +18,17 @@ class WorkflowDetails(BaseModel):
     description: Optional[str] = Field("", title="Workflow Description")
 
 
+class SubjectObs(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    subject_group_name: str = Field(
+        ...,
+        description="⚠️ The use of a group with mixed subtypes could lead to unexpected results",
+        title="Subject Group Name",
+    )
+
+
 class FilteredWeatherStation(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -122,6 +133,9 @@ class Params(BaseModel):
     )
     er_client_name: Optional[ErClientName] = Field(
         None, title="Select EarthRanger Data Source"
+    )
+    subject_obs: Optional[SubjectObs] = Field(
+        None, title="Get Subject Group Observations from EarthRanger"
     )
     filtered_weather_station: Optional[FilteredWeatherStation] = Field(
         None, title="Select Weather Stations"

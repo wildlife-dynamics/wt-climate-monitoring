@@ -105,7 +105,6 @@ def main(params: Params):
             raise_on_empty=True,
             include_details=True,
             include_subjectsource_details=True,
-            subject_group_name="Subjects",
             **(params_dict.get("subject_obs") or {}),
         )
         .call()

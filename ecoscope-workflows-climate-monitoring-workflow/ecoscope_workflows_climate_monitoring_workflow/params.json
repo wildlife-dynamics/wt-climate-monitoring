@@ -68,6 +68,21 @@
       "type": "object",
       "title": "Select EarthRanger Data Source"
     },
+    "subject_obs": {
+      "additionalProperties": false,
+      "properties": {
+        "subject_group_name": {
+          "title": "Subject Group Name",
+          "type": "string",
+          "description": "\u26a0\ufe0f The use of a group with mixed subtypes could lead to unexpected results"
+        }
+      },
+      "required": [
+        "subject_group_name"
+      ],
+      "type": "object",
+      "title": "Get Subject Group Observations from EarthRanger"
+    },
     "filtered_weather_station": {
       "additionalProperties": false,
       "properties": {
@@ -268,6 +283,7 @@
       "workflow_details",
       "time_range",
       "er_client_name",
+      "subject_obs",
       "filtered_weather_station",
       "groupers",
       "persist_observations",

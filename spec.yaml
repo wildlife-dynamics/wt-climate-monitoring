@@ -22,9 +22,6 @@ rjsf-overrides:
     filtered_weather_station.properties.values.description: >-
       Select the interested weather stations by subject names. If None, all weather stations in the subject group will be included
 
-  uiSchema:
-    Download Attachments.download_attachments.ui:options.label: false
-
 workflow:
   - name: Set Workflow Details
     id: workflow_details
@@ -56,7 +53,6 @@ workflow:
       raise_on_empty: true
       include_details: true
       include_subjectsource_details: true
-      subject_group_name: "Subjects"
   
   - name: Remove Extra Column Prefix
     id: drop_extra_prefix

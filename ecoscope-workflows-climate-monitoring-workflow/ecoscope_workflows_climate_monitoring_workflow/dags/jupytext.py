@@ -160,7 +160,9 @@ er_client_name = (
 # %%
 # parameters
 
-subject_obs_params = dict()
+subject_obs_params = dict(
+    subject_group_name=...,
+)
 
 # %%
 # call the task
@@ -176,7 +178,6 @@ subject_obs = (
         raise_on_empty=True,
         include_details=True,
         include_subjectsource_details=True,
-        subject_group_name="Subjects",
         **subject_obs_params,
     )
     .call()
