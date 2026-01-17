@@ -2,10 +2,10 @@
 
 ## Introduction
 
-This workflow helps you to monitor climate changes.
+This workflow helps you to monitor climate conditions, including temperature and precipitation, to understand long-term climate patterns, assess variability and extremes, forecast climate-related risks (such as heatwaves, floods, and droughts), and support climate adaptation, resilience, and environmental planning.
 
 **What this workflow does:**
-- Downloads climate observation data captured by TAMHO sensors from EarthRanger.
+- Downloads climate observation data captured by **TAMHO** sensors from EarthRanger.
 - Processes observations including temperature and precipitation measurements
 - Calculates daily summaries (total precipitation and average temperature)
 - Exports data in multiple formats (CSV, GeoParquet, GPKG)

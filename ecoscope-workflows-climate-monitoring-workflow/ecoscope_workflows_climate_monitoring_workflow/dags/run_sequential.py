@@ -319,10 +319,10 @@ def main(params: Params):
             x_column="date",
             y_column="daily_precipitation",
             category_column="weather_station",
-            line_kwargs={"shape": "hvh"},
+            line_kwargs={"shape": "spline"},
             layout_kwargs={
                 "xaxis": {"title": "Date"},
-                "yaxis": {"title": "Precipitation (mm)"},
+                "yaxis": {"title": "Precipitation (mm)", "range": [0, None]},
                 "legend_title": "Weather Station",
                 "hovermode": "closest",
             },

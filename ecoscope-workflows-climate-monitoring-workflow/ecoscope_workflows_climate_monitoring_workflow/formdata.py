@@ -35,7 +35,7 @@ class FilteredWeatherStation(BaseModel):
     )
     values: Optional[List[str]] = Field(
         None,
-        description="Select the interested weather stations by subject names. If None, all weather stations in the subject group will be included",
+        description="Select the interested weather stations by subject names. If None, all weather stations in the subject group will be included. Note that we will always download all observations in the subject group before filtering.",
         title="Weather Station",
     )
 

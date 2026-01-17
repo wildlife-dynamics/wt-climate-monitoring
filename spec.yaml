@@ -20,7 +20,7 @@ rjsf-overrides:
     persist_daily_summary.properties.filename_prefix.default: "daily_summary"
     filtered_weather_station.properties.values.title: "Weather Station"
     filtered_weather_station.properties.values.description: >-
-      Select the interested weather stations by subject names. If None, all weather stations in the subject group will be included
+      Select the interested weather stations by subject names. If None, all weather stations in the subject group will be included. Note that we will always download all observations in the subject group before filtering.
 
 workflow:
   - name: Set Workflow Details
@@ -183,12 +183,13 @@ workflow:
       y_column: daily_precipitation
       category_column: weather_station
       line_kwargs:
-        shape: "hvh"
+        shape: "spline"
       layout_kwargs:
         xaxis:
           title: "Date"
         yaxis:
           title: "Precipitation (mm)"
+          range: [0, null]
         legend_title: "Weather Station"
         hovermode: "closest"
     mapvalues:

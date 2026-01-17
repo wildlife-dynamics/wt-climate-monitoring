@@ -397,7 +397,7 @@ def main(params: Params):
                 "y_column": "daily_precipitation",
                 "category_column": "weather_station",
                 "line_kwargs": {
-                    "shape": "hvh",
+                    "shape": "spline",
                 },
                 "layout_kwargs": {
                     "xaxis": {
@@ -405,6 +405,10 @@ def main(params: Params):
                     },
                     "yaxis": {
                         "title": "Precipitation (mm)",
+                        "range": [
+                            0,
+                            None,
+                        ],
                     },
                     "legend_title": "Weather Station",
                     "hovermode": "closest",

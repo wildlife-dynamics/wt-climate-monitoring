@@ -93,7 +93,7 @@
           },
           "title": "Weather Station",
           "type": "array",
-          "description": "Select the interested weather stations by subject names. If None, all weather stations in the subject group will be included"
+          "description": "Select the interested weather stations by subject names. If None, all weather stations in the subject group will be included. Note that we will always download all observations in the subject group before filtering."
         }
       },
       "required": [],
@@ -293,14 +293,7 @@
       "groupers",
       "persist_observations",
       "persist_daily_summary"
-    ],
-    "Download Attachments": {
-      "download_attachments": {
-        "ui:options": {
-          "label": false
-        }
-      }
-    }
+    ]
   },
   "additionalProperties": false
 }
