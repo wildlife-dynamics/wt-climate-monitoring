@@ -189,9 +189,11 @@ workflow:
           title: "Date"
         yaxis:
           title: "Precipitation (mm)"
-          range: [0, null]
         legend_title: "Weather Station"
         hovermode: "closest"
+      smoothing: 
+        method: spline
+        y_min: 0
     mapvalues:
       argnames: dataframe
       argvalues: ${{ workflow.daily_weather.return }}
@@ -235,6 +237,7 @@ workflow:
           title: "Average Daily Temperature (Celsius)"
         legend_title: "Weather Station"
         hovermode: "closest"
+      
     mapvalues:
       argnames: dataframe
       argvalues: ${{ workflow.daily_weather.return }}

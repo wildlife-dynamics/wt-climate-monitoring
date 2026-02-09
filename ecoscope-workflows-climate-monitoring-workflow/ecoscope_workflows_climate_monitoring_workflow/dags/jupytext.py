@@ -574,10 +574,11 @@ precipitation_chart = (
         line_kwargs={"shape": "spline"},
         layout_kwargs={
             "xaxis": {"title": "Date"},
-            "yaxis": {"title": "Precipitation (mm)", "range": [0, None]},
+            "yaxis": {"title": "Precipitation (mm)"},
             "legend_title": "Weather Station",
             "hovermode": "closest",
         },
+        smoothing={"method": "spline", "y_min": 0},
         **precipitation_chart_params,
     )
     .mapvalues(argnames=["dataframe"], argvalues=daily_weather)
@@ -662,6 +663,7 @@ grouped_precipitation_widget = (
 # parameters
 
 temperature_chart_params = dict(
+    smoothing=...,
     widget_id=...,
 )
 

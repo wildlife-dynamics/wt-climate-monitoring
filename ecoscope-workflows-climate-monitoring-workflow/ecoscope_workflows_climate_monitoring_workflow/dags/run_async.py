@@ -397,13 +397,13 @@ def main(params: Params):
                     },
                     "yaxis": {
                         "title": "Precipitation (mm)",
-                        "range": [
-                            0,
-                            None,
-                        ],
                     },
                     "legend_title": "Weather Station",
                     "hovermode": "closest",
+                },
+                "smoothing": {
+                    "method": "spline",
+                    "y_min": 0,
                 },
             }
             | (params_dict.get("precipitation_chart") or {}),
