@@ -31,15 +31,37 @@ weather-station:
       data_source:
         name: "gmmf"
     subject_obs:
-      subject_group_name: "Subjects"
+      subject_group_name: "Test Stations"
     time_range:
       since: "2025-12-20T00:00:00Z"
       until: "2025-12-25T23:59:59Z"
     filtered_weather_station:
       values: 
         - "TA00569- Mara Triangle"
-        - "TA00570- Naboisho Conservancy"
-        - "TA00825- Mara North Conservancy"
     groupers:
       groupers: 
         - weather_station
+    create_climate_report:
+      template_path: /Users/yunwu/MEP/wt/wt-climate-monitoring/resources/templates/climate_template.docx # todo: use github link
+
+double-grouper:
+  name: Weather Station Per Month
+  mock_io: false
+  params:
+    workflow_details:
+      name: "Climate Workflow"
+      description: "A workflow for climate monitoring."
+    er_client_name:
+      data_source:
+        name: "gmmf"
+    subject_obs:
+      subject_group_name: "Test Stations"
+    time_range:
+      since: "2025-12-25T00:00:00Z"
+      until: "2026-01-05T23:59:59Z"
+    groupers:
+      groupers: 
+        - weather_station
+        - "%B"
+    create_climate_report:
+      template_path: /Users/yunwu/MEP/wt/wt-climate-monitoring/resources/templates/climate_template.docx # todo: use github link
