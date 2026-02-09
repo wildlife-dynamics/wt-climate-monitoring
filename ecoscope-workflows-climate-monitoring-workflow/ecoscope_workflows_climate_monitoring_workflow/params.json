@@ -75,6 +75,20 @@
           "title": "Subject Group Name",
           "type": "string",
           "description": "\u26a0\ufe0f The use of a group with mixed subtypes could lead to unexpected results"
+        },
+        "filter": {
+          "default": "clean",
+          "enum": [
+            "all",
+            "clean",
+            "manually_filtered",
+            "automatically_filtered",
+            "manually_and_automatically_filtered"
+          ],
+          "title": "Filter",
+          "type": "string",
+          "description": "Filter observations based on exclusion flags.",
+          "ecoscope:advanced": true
         }
       },
       "required": [
@@ -112,6 +126,9 @@
               },
               {
                 "$ref": "#/$defs/TemporalGrouper"
+              },
+              {
+                "$ref": "#/$defs/SpatialGrouper"
               }
             ],
             "title": "Group by"
@@ -171,6 +188,21 @@
       "required": [],
       "type": "object",
       "title": "Persist Daily Summary"
+    },
+    "create_climate_report": {
+      "additionalProperties": false,
+      "properties": {
+        "template_path": {
+          "title": "Template Path",
+          "type": "string",
+          "description": "Path to the Word template (.docx) file with Jinja2 placeholders"
+        }
+      },
+      "required": [
+        "template_path"
+      ],
+      "type": "object",
+      "title": "Create Climate Report"
     }
   },
   "$defs": {
@@ -214,6 +246,10 @@
       ],
       "title": "EarthRangerConnection",
       "type": "object"
+    },
+    "SpatialGrouper": {
+      "title": "Spatial Regions",
+      "type": "string"
     },
     "TemporalGrouper": {
       "oneOf": [
@@ -273,6 +309,12 @@
         "timezone"
       ]
     },
+    "subject_obs": {
+      "ui:order": [
+        "subject_group_name",
+        "filter"
+      ]
+    },
     "persist_observations": {
       "ui:order": [
         "filetypes",
@@ -287,7 +329,8 @@
       "filtered_weather_station",
       "groupers",
       "persist_observations",
-      "persist_daily_summary"
+      "persist_daily_summary",
+      "create_climate_report"
     ]
   },
   "additionalProperties": false

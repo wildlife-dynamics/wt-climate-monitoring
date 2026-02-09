@@ -33,6 +33,7 @@ from ecoscope_workflows_core.tasks.transformation import map_columns as map_colu
 from ecoscope_workflows_ext_custom.tasks.io import (
     persist_df_wrapper as persist_df_wrapper,
 )
+from ecoscope_workflows_ext_custom.tasks.results import create_docx as create_docx
 from ecoscope_workflows_ext_custom.tasks.transformation import (
     drop_column_prefix as drop_column_prefix,
 )
@@ -424,9 +425,49 @@ def main(params: Params):
         .call()
     )
 
-    weather_dashboard = (
+    create_climate_report = (
+        create_docx.validate()
+        .set_task_instance_id("create_climate_report")
+        .handle_errors()
+        .with_tracing()
+        .partial(
+            context={
+                "items": [
+                    {
+                        "item_type": "text",
+                        "key": "title",
+                        "value": "Climate Monitoring Report",
+                    },
+                    {
+                        "item_type": "text",
+                        "key": "report_date",
+                        "value": "December 2025",
+                    },
+                    {
+                        "item_type": "image",
+                        "key": "temperature_chart",
+                        "value": persist_temperature,
+                        "screenshot_config": {"wait_for_timeout": 0},
+                    },
+                    {
+                        "item_type": "image",
+                        "key": "precipitation_chart",
+                        "value": persist_precipitation,
+                        "screenshot_config": {"wait_for_timeout": 0},
+                    },
+                    {"item_type": "table", "key": "summary", "value": daily_weather},
+                ]
+            },
+            output_dir=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            filename_prefix="climate_report",
+            **(params_dict.get("create_climate_report") or {}),
+        )
+        .call()
+    )
+
+    climate_dashboard = (
         gather_dashboard.validate()
-        .set_task_instance_id("weather_dashboard")
+        .set_task_instance_id("climate_dashboard")
         .handle_errors()
         .with_tracing()
         .partial(
@@ -434,9 +475,9 @@ def main(params: Params):
             widgets=[grouped_precipitation_widget, grouped_temperature_widget],
             time_range=time_range,
             groupers=groupers,
-            **(params_dict.get("weather_dashboard") or {}),
+            **(params_dict.get("climate_dashboard") or {}),
         )
         .call()
     )
 
-    return weather_dashboard
+    return climate_dashboard

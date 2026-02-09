@@ -49,6 +49,7 @@ from ecoscope_workflows_core.tasks.transformation import map_columns as map_colu
 from ecoscope_workflows_ext_custom.tasks.io import (
     persist_df_wrapper as persist_df_wrapper,
 )
+from ecoscope_workflows_ext_custom.tasks.results import create_docx as create_docx
 from ecoscope_workflows_ext_custom.tasks.transformation import (
     drop_column_prefix as drop_column_prefix,
 )
@@ -98,7 +99,12 @@ def main(params: Params):
         "persist_temperature": ["temperature_chart"],
         "temperature_chart_widget": ["persist_temperature"],
         "grouped_temperature_widget": ["temperature_chart_widget"],
-        "weather_dashboard": [
+        "create_climate_report": [
+            "persist_temperature",
+            "persist_precipitation",
+            "daily_weather",
+        ],
+        "climate_dashboard": [
             "workflow_details",
             "grouped_precipitation_widget",
             "grouped_temperature_widget",
@@ -540,9 +546,57 @@ def main(params: Params):
             | (params_dict.get("grouped_temperature_widget") or {}),
             method="call",
         ),
-        "weather_dashboard": Node(
+        "create_climate_report": Node(
+            async_task=create_docx.validate()
+            .set_task_instance_id("create_climate_report")
+            .handle_errors()
+            .with_tracing()
+            .set_executor("lithops"),
+            partial={
+                "context": {
+                    "items": [
+                        {
+                            "item_type": "text",
+                            "key": "title",
+                            "value": "Climate Monitoring Report",
+                        },
+                        {
+                            "item_type": "text",
+                            "key": "report_date",
+                            "value": "December 2025",
+                        },
+                        {
+                            "item_type": "image",
+                            "key": "temperature_chart",
+                            "value": DependsOn("persist_temperature"),
+                            "screenshot_config": {
+                                "wait_for_timeout": 0,
+                            },
+                        },
+                        {
+                            "item_type": "image",
+                            "key": "precipitation_chart",
+                            "value": DependsOn("persist_precipitation"),
+                            "screenshot_config": {
+                                "wait_for_timeout": 0,
+                            },
+                        },
+                        {
+                            "item_type": "table",
+                            "key": "summary",
+                            "value": DependsOn("daily_weather"),
+                        },
+                    ],
+                },
+                "output_dir": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+                "filename_prefix": "climate_report",
+            }
+            | (params_dict.get("create_climate_report") or {}),
+            method="call",
+        ),
+        "climate_dashboard": Node(
             async_task=gather_dashboard.validate()
-            .set_task_instance_id("weather_dashboard")
+            .set_task_instance_id("climate_dashboard")
             .handle_errors()
             .with_tracing()
             .set_executor("lithops"),
@@ -555,7 +609,7 @@ def main(params: Params):
                 "time_range": DependsOn("time_range"),
                 "groupers": DependsOn("groupers"),
             }
-            | (params_dict.get("weather_dashboard") or {}),
+            | (params_dict.get("climate_dashboard") or {}),
             method="call",
         ),
     }
