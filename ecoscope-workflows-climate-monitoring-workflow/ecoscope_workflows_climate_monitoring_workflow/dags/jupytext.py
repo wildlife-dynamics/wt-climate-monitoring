@@ -163,7 +163,6 @@ er_client_name = (
 
 subject_obs_params = dict(
     subject_group_name=...,
-    filter=...,
 )
 
 # %%
@@ -180,6 +179,7 @@ subject_obs = (
         raise_on_empty=True,
         include_details=True,
         include_subjectsource_details=True,
+        filter="none",
         **subject_obs_params,
     )
     .call()
@@ -786,7 +786,7 @@ create_climate_report = (
                     "key": "title",
                     "value": "Climate Monitoring Report",
                 },
-                {"item_type": "text", "key": "report_date", "value": "December 2025"},
+                {"item_type": "timerange", "key": "report_date", "value": time_range},
                 {
                     "item_type": "image",
                     "key": "temperature_chart",
@@ -802,6 +802,7 @@ create_climate_report = (
                 {"item_type": "table", "key": "summary", "value": daily_weather},
             ]
         },
+        groupers=groupers,
         output_dir=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
         filename_prefix="climate_report",
         **create_climate_report_params,

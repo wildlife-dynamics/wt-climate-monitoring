@@ -86,9 +86,11 @@ def main(params: Params):
         "temperature_chart_widget": ["persist_temperature"],
         "grouped_temperature_widget": ["temperature_chart_widget"],
         "create_climate_report": [
+            "time_range",
             "persist_temperature",
             "persist_precipitation",
             "daily_weather",
+            "groupers",
         ],
         "climate_dashboard": [
             "workflow_details",
@@ -154,6 +156,7 @@ def main(params: Params):
                 "raise_on_empty": True,
                 "include_details": True,
                 "include_subjectsource_details": True,
+                "filter": "none",
             }
             | (params_dict.get("subject_obs") or {}),
             method="call",
@@ -547,9 +550,9 @@ def main(params: Params):
                             "value": "Climate Monitoring Report",
                         },
                         {
-                            "item_type": "text",
+                            "item_type": "timerange",
                             "key": "report_date",
-                            "value": "December 2025",
+                            "value": DependsOn("time_range"),
                         },
                         {
                             "item_type": "image",
@@ -574,6 +577,7 @@ def main(params: Params):
                         },
                     ],
                 },
+                "groupers": DependsOn("groupers"),
                 "output_dir": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
                 "filename_prefix": "climate_report",
             }

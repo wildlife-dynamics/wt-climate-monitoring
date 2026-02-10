@@ -75,20 +75,6 @@
           "title": "Subject Group Name",
           "type": "string",
           "description": "\u26a0\ufe0f The use of a group with mixed subtypes could lead to unexpected results"
-        },
-        "filter": {
-          "default": "clean",
-          "enum": [
-            "all",
-            "clean",
-            "manually_filtered",
-            "automatically_filtered",
-            "manually_and_automatically_filtered"
-          ],
-          "title": "Filter",
-          "type": "string",
-          "description": "Filter observations based on exclusion flags.",
-          "ecoscope:advanced": true
         }
       },
       "required": [
@@ -376,12 +362,6 @@
         "since",
         "until",
         "timezone"
-      ]
-    },
-    "subject_obs": {
-      "ui:order": [
-        "subject_group_name",
-        "filter"
       ]
     },
     "persist_observations": {

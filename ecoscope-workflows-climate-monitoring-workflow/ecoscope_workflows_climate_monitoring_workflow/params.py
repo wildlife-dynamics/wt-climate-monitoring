@@ -18,14 +18,6 @@ class WorkflowDetails(BaseModel):
     description: Optional[str] = Field("", title="Workflow Description")
 
 
-class Filter(str, Enum):
-    all = "all"
-    clean = "clean"
-    manually_filtered = "manually_filtered"
-    automatically_filtered = "automatically_filtered"
-    manually_and_automatically_filtered = "manually_and_automatically_filtered"
-
-
 class SubjectObs(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
@@ -34,11 +26,6 @@ class SubjectObs(BaseModel):
         ...,
         description="⚠️ The use of a group with mixed subtypes could lead to unexpected results",
         title="Subject Group Name",
-    )
-    filter: Optional[Filter] = Field(
-        "clean",
-        description="Filter observations based on exclusion flags.",
-        title="Filter",
     )
 
 

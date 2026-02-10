@@ -120,6 +120,7 @@ def main(params: Params):
             raise_on_empty=True,
             include_details=True,
             include_subjectsource_details=True,
+            filter="none",
             **(params_dict.get("subject_obs") or {}),
         )
         .call()
@@ -454,9 +455,9 @@ def main(params: Params):
                         "value": "Climate Monitoring Report",
                     },
                     {
-                        "item_type": "text",
+                        "item_type": "timerange",
                         "key": "report_date",
-                        "value": "December 2025",
+                        "value": time_range,
                     },
                     {
                         "item_type": "image",
@@ -473,6 +474,7 @@ def main(params: Params):
                     {"item_type": "table", "key": "summary", "value": daily_weather},
                 ]
             },
+            groupers=groupers,
             output_dir=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
             filename_prefix="climate_report",
             **(params_dict.get("create_climate_report") or {}),

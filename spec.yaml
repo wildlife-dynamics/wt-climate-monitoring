@@ -53,6 +53,7 @@ workflow:
       raise_on_empty: true
       include_details: true
       include_subjectsource_details: true
+      filter: none
   
   - name: Remove Extra Column Prefix
     id: drop_extra_prefix
@@ -230,7 +231,6 @@ workflow:
       line_kwargs:
         shape: "spline"
       layout_kwargs:
-        # title: "Daily Temperature by Station"
         xaxis:
           title: "Date"
         yaxis:
@@ -273,9 +273,9 @@ workflow:
           - item_type: text
             key: title
             value: "Climate Monitoring Report"
-          - item_type: text
+          - item_type: timerange
             key: report_date
-            value: "December 2025" # todo: from time_range 
+            value: ${{ workflow.time_range.return }}
           - item_type: image
             key: temperature_chart
             value: ${{ workflow.persist_temperature.return }}
@@ -289,6 +289,7 @@ workflow:
           - item_type: table
             key: summary
             value: ${{ workflow.daily_weather.return }}
+      groupers: ${{ workflow.groupers.return }}
       output_dir: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
       filename_prefix: climate_report
       
