@@ -18,7 +18,7 @@ base:
     persist_daily_summary:
       filename_prefix: "climate_summary"
     create_climate_report:
-      template_path: /Users/yunwu/MEP/wt/wt-climate-monitoring/resources/templates/climate_template.docx # todo: use github link and add default
+      template_path: https://github.com/wildlife-dynamics/wt-climate-monitoring/raw/refs/heads/main/resources/templates/climate_template.docx
 
 weather-station:
   name: Weather Station
@@ -42,7 +42,7 @@ weather-station:
       groupers: 
         - weather_station
     create_climate_report:
-      template_path: /Users/yunwu/MEP/wt/wt-climate-monitoring/resources/templates/climate_template.docx # todo: use github link
+      template_path: https://github.com/wildlife-dynamics/wt-climate-monitoring/raw/refs/heads/main/resources/templates/climate_template.docx
 
 double-grouper:
   name: Weather Station Per Month
@@ -64,4 +64,4 @@ double-grouper:
         - weather_station
         - "%B"
     create_climate_report:
-      template_path: /Users/yunwu/MEP/wt/wt-climate-monitoring/resources/templates/climate_template.docx # todo: use github link
+      template_path: https://github.com/wildlife-dynamics/wt-climate-monitoring/raw/refs/heads/main/resources/templates/climate_template.docx

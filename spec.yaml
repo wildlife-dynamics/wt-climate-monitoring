@@ -21,6 +21,8 @@ rjsf-overrides:
     filtered_weather_station.properties.values.title: "Weather Station"
     filtered_weather_station.properties.values.description: >-
       Select the interested weather stations by subject names. If None, all weather stations in the subject group will be included. Note that we will always download all observations in the subject group before filtering.
+    create_climate_report.properties.template_path.default: "https://github.com/wildlife-dynamics/wt-climate-monitoring/raw/refs/heads/main/resources/templates/climate_template.docx"
+    
 
 workflow:
   - name: Set Workflow Details

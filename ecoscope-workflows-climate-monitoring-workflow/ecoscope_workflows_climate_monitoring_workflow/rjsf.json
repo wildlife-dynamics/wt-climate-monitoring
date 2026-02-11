@@ -181,7 +181,8 @@
         "template_path": {
           "title": "Template Path",
           "type": "string",
-          "description": "Path or URL to the Word template (.docx) file with Jinja2 placeholders. Supports local paths and remote URLs (http://, https://)."
+          "description": "Path or URL to the Word template (.docx) file with Jinja2 placeholders. Supports local paths and remote URLs (http://, https://).",
+          "default": "https://github.com/wildlife-dynamics/wt-climate-monitoring/raw/refs/heads/main/resources/templates/climate_template.docx"
         }
       },
       "required": [
