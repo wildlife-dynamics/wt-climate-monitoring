@@ -48,6 +48,7 @@ from ecoscope_workflows_core.tasks.transformation import map_columns as map_colu
 from ecoscope_workflows_ext_custom.tasks.io import (
     persist_df_wrapper as persist_df_wrapper,
 )
+from ecoscope_workflows_ext_custom.tasks.results import create_docx as create_docx
 from ecoscope_workflows_ext_custom.tasks.transformation import (
     drop_column_prefix as drop_column_prefix,
 )
@@ -119,6 +120,7 @@ def main(params: Params):
             raise_on_empty=True,
             include_details=True,
             include_subjectsource_details=True,
+            filter="none",
             **(params_dict.get("subject_obs") or {}),
         )
         .call()
@@ -158,6 +160,7 @@ def main(params: Params):
                 "subject__name",
             ],
             rename_columns={"subject__name": "weather_station"},
+            raise_if_not_found=False,
             **(params_dict.get("process_columns") or {}),
         )
         .call()
@@ -336,10 +339,11 @@ def main(params: Params):
             line_kwargs={"shape": "spline"},
             layout_kwargs={
                 "xaxis": {"title": "Date"},
-                "yaxis": {"title": "Precipitation (mm)", "range": [0, None]},
+                "yaxis": {"title": "Precipitation (mm)"},
                 "legend_title": "Weather Station",
                 "hovermode": "closest",
             },
+            smoothing={"method": "spline", "y_min": 0},
             **(params_dict.get("precipitation_chart") or {}),
         )
         .mapvalues(argnames=["dataframe"], argvalues=daily_weather)
@@ -397,6 +401,7 @@ def main(params: Params):
                 "legend_title": "Weather Station",
                 "hovermode": "closest",
             },
+            smoothing=None,
             **(params_dict.get("temperature_chart") or {}),
         )
         .mapvalues(argnames=["dataframe"], argvalues=daily_weather)
@@ -438,9 +443,50 @@ def main(params: Params):
         .call()
     )
 
-    weather_dashboard = (
+    create_climate_report = (
+        create_docx.validate()
+        .set_task_instance_id("create_climate_report")
+        .handle_errors()
+        .with_tracing()
+        .partial(
+            context={
+                "items": [
+                    {
+                        "item_type": "text",
+                        "key": "title",
+                        "value": "Climate Monitoring Report",
+                    },
+                    {
+                        "item_type": "timerange",
+                        "key": "report_date",
+                        "value": time_range,
+                    },
+                    {
+                        "item_type": "image",
+                        "key": "temperature_chart",
+                        "value": persist_temperature,
+                        "screenshot_config": {"wait_for_timeout": 0},
+                    },
+                    {
+                        "item_type": "image",
+                        "key": "precipitation_chart",
+                        "value": persist_precipitation,
+                        "screenshot_config": {"wait_for_timeout": 0},
+                    },
+                    {"item_type": "table", "key": "summary", "value": daily_weather},
+                ]
+            },
+            groupers=groupers,
+            output_dir=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            filename_prefix="climate_report",
+            **(params_dict.get("create_climate_report") or {}),
+        )
+        .call()
+    )
+
+    climate_dashboard = (
         gather_dashboard.validate()
-        .set_task_instance_id("weather_dashboard")
+        .set_task_instance_id("climate_dashboard")
         .handle_errors()
         .with_tracing()
         .partial(
@@ -448,9 +494,9 @@ def main(params: Params):
             widgets=[grouped_precipitation_widget, grouped_temperature_widget],
             time_range=time_range,
             groupers=groupers,
-            **(params_dict.get("weather_dashboard") or {}),
+            **(params_dict.get("climate_dashboard") or {}),
         )
         .call()
     )
 
-    return weather_dashboard
+    return climate_dashboard

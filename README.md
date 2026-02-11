@@ -10,6 +10,7 @@ This workflow helps you to monitor climate conditions, including temperature and
 - Calculates daily summaries (total precipitation and average temperature)
 - Exports data in multiple formats (CSV, GeoParquet, GPKG)
 - Creates interactive charts showing precipitation and temperature trends over time
+- Generates a downloadable Climate Report (Word document) with charts and data summary
 
 **Who should use this:**
 - Conservation managers monitoring climate conditions in protected areas
@@ -87,11 +88,13 @@ Filter which weather stations to include in your analysis.
   - Example: Select `["TA00569- Mara Triangle", "TA00570- Naboisho Conservancy", "TA00825- Mara North Conservancy"]`
 
 #### 6. Group Data (Optional)
-Organize your data into separate views based on time periods or weather stations.
+Organize your data into separate views based on time periods, weather stations, or spatial regions.
 
 - **Group by**: Create separate outputs grouped by:
   - Time: Year, Month, Date, Day of week, Hour, etc.
   - Category: Weather Station - creates separate views for each weather station
+  - Spatial Regions: Group by geographic regions (if configured)
+  - You can select multiple groupers to create nested groupings (e.g., group by weather station AND month)
 
 #### 7. Persist Observations
 Choose how to save your raw observation data with normalized observation details
@@ -108,6 +111,18 @@ The workflow automatically creates a daily summary CSV file with aggregated prec
 - This file is always created and includes:
   - Total daily precipitation by weather station
   - Average daily temperature by weather station
+
+#### 9. Create Climate Report
+Generate a downloadable Word document (.docx) containing your climate analysis.
+
+- **Template Path** (required): Path or URL to a Word template file with Jinja2 placeholders
+  - You can use the default template or provide your own customized template
+  - Supports both local file paths and remote URLs (http://, https://)
+- The report includes:
+  - Report title and date range
+  - Temperature chart visualization
+  - Precipitation chart visualization
+  - Summary data table
 
 ### Advanced Configuration
 
@@ -203,6 +218,14 @@ The workflow creates an interactive dashboard with two main visualizations:
   - Smooth spline: Shows temperature trends as smooth curves
   - Legend: Identifies each weather station by color
 
+### Climate Report Output
+
+The workflow generates a downloadable Word document (.docx) containing:
+- **Report title and date range**: Summary of the analysis period
+- **Temperature chart**: Visual representation of temperature trends
+- **Precipitation chart**: Visual representation of precipitation data
+- **Summary table**: Aggregated daily climate data
+
 ### Grouped Outputs
 
 If you configured data grouping:
@@ -229,6 +252,7 @@ Here are some typical scenarios and how to configure the workflow for each:
 - CSV file with all raw observations from all weather stations
 - Daily summary CSV with aggregated precipitation and temperature
 - Interactive dashboard with precipitation and temperature charts showing all stations
+- Climate report (Word document) with charts and summary
 
 ---
 
@@ -248,6 +272,7 @@ Here are some typical scenarios and how to configure the workflow for each:
 - CSV and GeoParquet files with observations from only the three selected stations
 - Daily summary CSV for those stations
 - Dashboard charts comparing the three stations
+- Climate report with charts and summary for selected stations
 
 ---
 
@@ -270,24 +295,24 @@ Here are some typical scenarios and how to configure the workflow for each:
 
 ---
 
-### Example 4: Monthly Climate Trends
-**Goal**: Analyze climate data grouped by month
+### Example 4: Multiple Groupers (Weather Station by Month)
+**Goal**: Analyze climate data grouped by both weather station AND month
 
 **Configuration**:
 - **Time Range**:
-  - Since: `2025-01-01T00:00:00`
-  - Until: `2025-12-31T23:59:59`
+  - Since: `2025-12-25T00:00:00`
+  - Until: `2026-01-05T23:59:59`
   - Timezone: `Africa/Nairobi (UTC+03:00)`
 - **Subject Group Name**: `"Subjects"`
 - **Group Data**:
-  - Select `"%B"` (Month name: January, February, etc.)
-- **Filetypes**: Select `CSV` and `GeoParquet`
-- **Filename Prefix**: `"climate_summary"`
+  - Select `weather_station`
+  - Also select `"%B"` (Month name: January, February, etc.)
+- **Filetypes**: Select `CSV`
 
 **Result**:
-- 12 sets of observation files (one per month)
-- 12 daily summary files (one per month)
-- Dashboard with 12 views showing precipitation and temperature trends for each month
+- Separate output files for each station-month combination
+- Dashboard with nested views for each station and month
+- Climate report with charts and summary
 
 ## Troubleshooting
 

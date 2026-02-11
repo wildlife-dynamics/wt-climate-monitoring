@@ -1,13 +1,13 @@
 id: climate_monitoring
 requirements:
   - name: ecoscope-workflows-core
-    version: ">=0.20.6, <0.21"
+    version: ">=0.22.2, <0.23"
     channel: https://repo.prefix.dev/ecoscope-workflows/
   - name: ecoscope-workflows-ext-ecoscope
-    version: ">=0.20.6, <0.21"
+    version: ">=0.22.2, <0.23"
     channel: https://repo.prefix.dev/ecoscope-workflows/
   - name: ecoscope-workflows-ext-custom
-    version: ">=0.0.19, <0.1.0"
+    version: ">=0.0.26, <0.1.0"
     channel: https://repo.prefix.dev/ecoscope-workflows-custom/
 rjsf-overrides:
   $defs:
@@ -21,6 +21,8 @@ rjsf-overrides:
     filtered_weather_station.properties.values.title: "Weather Station"
     filtered_weather_station.properties.values.description: >-
       Select the interested weather stations by subject names. If None, all weather stations in the subject group will be included. Note that we will always download all observations in the subject group before filtering.
+    create_climate_report.properties.template_path.default: "https://github.com/wildlife-dynamics/wt-climate-monitoring/raw/refs/heads/main/resources/templates/climate_template.docx"
+    
 
 workflow:
   - name: Set Workflow Details
@@ -53,6 +55,7 @@ workflow:
       raise_on_empty: true
       include_details: true
       include_subjectsource_details: true
+      filter: none
   
   - name: Remove Extra Column Prefix
     id: drop_extra_prefix
@@ -71,7 +74,7 @@ workflow:
       retain_columns: ["id", "subject_id", "created_at", "recorded_at", "source", "device_status_properties", "observation_details", "geometry", "subject__name"]
       rename_columns:
         subject__name: "weather_station"
-
+      raise_if_not_found: false
 
   - name: "Convert to timezone"
     id: convert_to_user_timezone
@@ -189,9 +192,11 @@ workflow:
           title: "Date"
         yaxis:
           title: "Precipitation (mm)"
-          range: [0, null]
         legend_title: "Weather Station"
         hovermode: "closest"
+      smoothing: 
+        method: spline
+        y_min: 0
     mapvalues:
       argnames: dataframe
       argvalues: ${{ workflow.daily_weather.return }}
@@ -228,13 +233,14 @@ workflow:
       line_kwargs:
         shape: "spline"
       layout_kwargs:
-        # title: "Daily Temperature by Station"
         xaxis:
           title: "Date"
         yaxis:
           title: "Average Daily Temperature (Celsius)"
         legend_title: "Weather Station"
         hovermode: "closest"
+      smoothing: null
+      
     mapvalues:
       argnames: dataframe
       argvalues: ${{ workflow.daily_weather.return }}
@@ -260,9 +266,38 @@ workflow:
     task: merge_widget_views
     partial:
       widgets: ${{ workflow.temperature_chart_widget.return }}
+
+  - name: Create Climate Report
+    id: create_climate_report
+    task: create_docx
+    partial:
+      context:
+        items:
+          - item_type: text
+            key: title
+            value: "Climate Monitoring Report"
+          - item_type: timerange
+            key: report_date
+            value: ${{ workflow.time_range.return }}
+          - item_type: image
+            key: temperature_chart
+            value: ${{ workflow.persist_temperature.return }}
+            screenshot_config:
+              wait_for_timeout: 0
+          - item_type: image
+            key: precipitation_chart 
+            value: ${{ workflow.persist_precipitation.return }}
+            screenshot_config:
+              wait_for_timeout: 0
+          - item_type: table
+            key: summary
+            value: ${{ workflow.daily_weather.return }}
+      groupers: ${{ workflow.groupers.return }}
+      output_dir: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+      filename_prefix: climate_report
       
-  - name: Create A Weather Dashboard
-    id: weather_dashboard
+  - name: Create A Climate Dashboard
+    id: climate_dashboard
     task: gather_dashboard
     partial:
       details: ${{ workflow.workflow_details.return}}

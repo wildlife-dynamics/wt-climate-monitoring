@@ -43,6 +43,7 @@ from ecoscope_workflows_core.tasks.transformation import map_columns as map_colu
 from ecoscope_workflows_ext_custom.tasks.io import (
     persist_df_wrapper as persist_df_wrapper,
 )
+from ecoscope_workflows_ext_custom.tasks.results import create_docx as create_docx
 from ecoscope_workflows_ext_custom.tasks.transformation import (
     drop_column_prefix as drop_column_prefix,
 )
@@ -178,6 +179,7 @@ subject_obs = (
         raise_on_empty=True,
         include_details=True,
         include_subjectsource_details=True,
+        filter="none",
         **subject_obs_params,
     )
     .call()
@@ -241,6 +243,7 @@ process_columns = (
             "subject__name",
         ],
         rename_columns={"subject__name": "weather_station"},
+        raise_if_not_found=False,
         **process_columns_params,
     )
     .call()
@@ -572,10 +575,11 @@ precipitation_chart = (
         line_kwargs={"shape": "spline"},
         layout_kwargs={
             "xaxis": {"title": "Date"},
-            "yaxis": {"title": "Precipitation (mm)", "range": [0, None]},
+            "yaxis": {"title": "Precipitation (mm)"},
             "legend_title": "Weather Station",
             "hovermode": "closest",
         },
+        smoothing={"method": "spline", "y_min": 0},
         **precipitation_chart_params,
     )
     .mapvalues(argnames=["dataframe"], argvalues=daily_weather)
@@ -682,6 +686,7 @@ temperature_chart = (
             "legend_title": "Weather Station",
             "hovermode": "closest",
         },
+        smoothing=None,
         **temperature_chart_params,
     )
     .mapvalues(argnames=["dataframe"], argvalues=daily_weather)
@@ -757,12 +762,63 @@ grouped_temperature_widget = (
 
 
 # %% [markdown]
-# ## Create A Weather Dashboard
+# ## Create Climate Report
 
 # %%
 # parameters
 
-weather_dashboard_params = dict(
+create_climate_report_params = dict(
+    template_path=...,
+)
+
+# %%
+# call the task
+
+
+create_climate_report = (
+    create_docx.set_task_instance_id("create_climate_report")
+    .handle_errors()
+    .with_tracing()
+    .partial(
+        context={
+            "items": [
+                {
+                    "item_type": "text",
+                    "key": "title",
+                    "value": "Climate Monitoring Report",
+                },
+                {"item_type": "timerange", "key": "report_date", "value": time_range},
+                {
+                    "item_type": "image",
+                    "key": "temperature_chart",
+                    "value": persist_temperature,
+                    "screenshot_config": {"wait_for_timeout": 0},
+                },
+                {
+                    "item_type": "image",
+                    "key": "precipitation_chart",
+                    "value": persist_precipitation,
+                    "screenshot_config": {"wait_for_timeout": 0},
+                },
+                {"item_type": "table", "key": "summary", "value": daily_weather},
+            ]
+        },
+        groupers=groupers,
+        output_dir=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+        filename_prefix="climate_report",
+        **create_climate_report_params,
+    )
+    .call()
+)
+
+
+# %% [markdown]
+# ## Create A Climate Dashboard
+
+# %%
+# parameters
+
+climate_dashboard_params = dict(
     warning=...,
 )
 
@@ -770,8 +826,8 @@ weather_dashboard_params = dict(
 # call the task
 
 
-weather_dashboard = (
-    gather_dashboard.set_task_instance_id("weather_dashboard")
+climate_dashboard = (
+    gather_dashboard.set_task_instance_id("climate_dashboard")
     .handle_errors()
     .with_tracing()
     .partial(
@@ -779,7 +835,7 @@ weather_dashboard = (
         widgets=[grouped_precipitation_widget, grouped_temperature_widget],
         time_range=time_range,
         groupers=groupers,
-        **weather_dashboard_params,
+        **climate_dashboard_params,
     )
     .call()
 )

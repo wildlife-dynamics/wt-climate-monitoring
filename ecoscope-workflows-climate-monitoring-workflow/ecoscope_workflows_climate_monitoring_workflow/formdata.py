@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 from enum import Enum
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, RootModel
 
 
 class WorkflowDetails(BaseModel):
@@ -69,6 +69,17 @@ class PersistDailySummary(BaseModel):
     )
 
 
+class CreateClimateReport(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    template_path: str = Field(
+        ...,
+        description="Path or URL to the Word template (.docx) file with Jinja2 placeholders. Supports local paths and remote URLs (http://, https://).",
+        title="Template Path",
+    )
+
+
 class TimezoneInfo(BaseModel):
     label: str = Field(..., title="Label")
     tzCode: str = Field(..., title="Tzcode")
@@ -78,6 +89,10 @@ class TimezoneInfo(BaseModel):
 
 class EarthRangerConnection(BaseModel):
     name: str = Field(..., title="Data Source")
+
+
+class SpatialGrouper(RootModel[str]):
+    root: str = Field(..., title="Spatial Regions")
 
 
 class TemporalGrouper(str, Enum):
@@ -117,7 +132,7 @@ class Groupers(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    groupers: list[ValueGrouper | TemporalGrouper] | None = Field(
+    groupers: list[ValueGrouper | TemporalGrouper | SpatialGrouper] | None = Field(
         None,
         description="            Specify how the data should be grouped to create the views for your dashboard.\n            This field is optional; if left blank, all the data will appear in a single view.\n            ",
         title=" ",
@@ -151,4 +166,7 @@ class FormData(BaseModel):
     )
     persist_daily_summary: PersistDailySummary | None = Field(
         None, title="Persist Daily Summary"
+    )
+    create_climate_report: CreateClimateReport | None = Field(
+        None, title="Create Climate Report"
     )

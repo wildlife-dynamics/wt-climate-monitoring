@@ -112,6 +112,9 @@
               },
               {
                 "$ref": "#/$defs/TemporalGrouper"
+              },
+              {
+                "$ref": "#/$defs/SpatialGrouper"
               }
             ],
             "title": "Group by"
@@ -171,6 +174,22 @@
       "required": [],
       "type": "object",
       "title": "Persist Daily Summary"
+    },
+    "create_climate_report": {
+      "additionalProperties": false,
+      "properties": {
+        "template_path": {
+          "title": "Template Path",
+          "type": "string",
+          "description": "Path or URL to the Word template (.docx) file with Jinja2 placeholders. Supports local paths and remote URLs (http://, https://).",
+          "default": "https://github.com/wildlife-dynamics/wt-climate-monitoring/raw/refs/heads/main/resources/templates/climate_template.docx"
+        }
+      },
+      "required": [
+        "template_path"
+      ],
+      "type": "object",
+      "title": "Create Climate Report"
     }
   },
   "$defs": {
@@ -214,6 +233,10 @@
       ],
       "title": "EarthRangerConnection",
       "type": "object"
+    },
+    "SpatialGrouper": {
+      "title": "Spatial Regions",
+      "type": "string"
     },
     "TemporalGrouper": {
       "oneOf": [
@@ -292,7 +315,8 @@
       "filtered_weather_station",
       "groupers",
       "persist_observations",
-      "persist_daily_summary"
+      "persist_daily_summary",
+      "create_climate_report"
     ]
   },
   "additionalProperties": false
