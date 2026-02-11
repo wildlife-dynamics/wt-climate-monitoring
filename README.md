@@ -226,14 +226,11 @@ The workflow generates a downloadable Word document (.docx) containing:
 - **Precipitation chart**: Visual representation of precipitation data
 - **Summary table**: Aggregated daily climate data
 
-If grouping is configured, separate reports are generated for each group.
-
 ### Grouped Outputs
 
 If you configured data grouping:
 - You'll receive separate files for each group (e.g., one per weather station or time period)
 - Dashboard visualizations will have multiple views, with each group selectable from the dashboard
-- Separate climate reports are generated for each group
 
 ## Common Use Cases & Examples
 
@@ -315,7 +312,7 @@ Here are some typical scenarios and how to configure the workflow for each:
 **Result**:
 - Separate output files for each station-month combination
 - Dashboard with nested views for each station and month
-- Separate climate reports for each group combination
+- Climate report with charts and summary
 
 ## Troubleshooting
 
