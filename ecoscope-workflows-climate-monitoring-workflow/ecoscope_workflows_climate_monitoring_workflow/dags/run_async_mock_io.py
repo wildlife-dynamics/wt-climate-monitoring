@@ -211,6 +211,7 @@ def main(params: Params):
                 "rename_columns": {
                     "subject__name": "weather_station",
                 },
+                "raise_if_not_found": False,
             }
             | (params_dict.get("process_columns") or {}),
             method="call",
@@ -497,6 +498,7 @@ def main(params: Params):
                     "legend_title": "Weather Station",
                     "hovermode": "closest",
                 },
+                "smoothing": None,
             }
             | (params_dict.get("temperature_chart") or {}),
             method="mapvalues",

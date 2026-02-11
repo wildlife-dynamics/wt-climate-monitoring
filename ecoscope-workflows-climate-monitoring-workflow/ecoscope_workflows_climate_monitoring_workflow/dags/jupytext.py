@@ -243,6 +243,7 @@ process_columns = (
             "subject__name",
         ],
         rename_columns={"subject__name": "weather_station"},
+        raise_if_not_found=False,
         **process_columns_params,
     )
     .call()
@@ -663,7 +664,6 @@ grouped_precipitation_widget = (
 # parameters
 
 temperature_chart_params = dict(
-    smoothing=...,
     widget_id=...,
 )
 
@@ -686,6 +686,7 @@ temperature_chart = (
             "legend_title": "Weather Station",
             "hovermode": "closest",
         },
+        smoothing=None,
         **temperature_chart_params,
     )
     .mapvalues(argnames=["dataframe"], argvalues=daily_weather)

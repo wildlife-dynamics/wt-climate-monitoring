@@ -18,7 +18,7 @@ base:
     persist_daily_summary:
       filename_prefix: "climate_summary"
     create_climate_report:
-      template_path: /Users/yunwu/MEP/wt/wt-climate-monitoring/resources/templates/climate_template.docx # todo: use github link
+      template_path: /Users/yunwu/MEP/wt/wt-climate-monitoring/resources/templates/climate_template.docx # todo: use github link and add default
 
 weather-station:
   name: Weather Station

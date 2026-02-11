@@ -72,7 +72,7 @@ workflow:
       retain_columns: ["id", "subject_id", "created_at", "recorded_at", "source", "device_status_properties", "observation_details", "geometry", "subject__name"]
       rename_columns:
         subject__name: "weather_station"
-
+      raise_if_not_found: false
 
   - name: "Convert to timezone"
     id: convert_to_user_timezone
@@ -237,6 +237,7 @@ workflow:
           title: "Average Daily Temperature (Celsius)"
         legend_title: "Weather Station"
         hovermode: "closest"
+      smoothing: null
       
     mapvalues:
       argnames: dataframe
