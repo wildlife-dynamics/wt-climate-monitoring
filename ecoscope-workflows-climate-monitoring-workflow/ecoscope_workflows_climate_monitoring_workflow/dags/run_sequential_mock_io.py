@@ -31,6 +31,9 @@ from ecoscope_workflows_core.tasks.io import persist_text as persist_text
 from ecoscope_workflows_core.tasks.results import (
     create_plot_widget_single_view as create_plot_widget_single_view,
 )
+from ecoscope_workflows_core.tasks.results import (
+    create_table_widget_single_view as create_table_widget_single_view,
+)
 from ecoscope_workflows_core.tasks.results import gather_dashboard as gather_dashboard
 from ecoscope_workflows_core.tasks.results import (
     merge_widget_views as merge_widget_views,
@@ -59,6 +62,7 @@ from ecoscope_workflows_ext_ecoscope.tasks.analysis import summarize_df as summa
 from ecoscope_workflows_ext_ecoscope.tasks.results import (
     draw_line_chart as draw_line_chart,
 )
+from ecoscope_workflows_ext_ecoscope.tasks.results import draw_table as draw_table
 from ecoscope_workflows_ext_ecoscope.tasks.transformation import (
     normalize_json_column as normalize_json_column,
 )
@@ -327,6 +331,58 @@ def main(params: Params):
         .mapvalues(argnames=["df"], argvalues=daily_weather)
     )
 
+    draw_summary_table = (
+        draw_table.validate()
+        .set_task_instance_id("draw_summary_table")
+        .handle_errors()
+        .with_tracing()
+        .partial(
+            table_config={
+                "enable_sorting": True,
+                "enable_filtering": True,
+                "enable_download": True,
+                "hide_header": False,
+            },
+            **(params_dict.get("draw_summary_table") or {}),
+        )
+        .mapvalues(argnames=["dataframe"], argvalues=daily_weather)
+    )
+
+    persist_summary_table = (
+        persist_text.validate()
+        .set_task_instance_id("persist_summary_table")
+        .handle_errors()
+        .with_tracing()
+        .partial(
+            root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            **(params_dict.get("persist_summary_table") or {}),
+        )
+        .mapvalues(argnames=["text"], argvalues=draw_summary_table)
+    )
+
+    summary_table_widget = (
+        create_table_widget_single_view.validate()
+        .set_task_instance_id("summary_table_widget")
+        .handle_errors()
+        .with_tracing()
+        .partial(
+            title="Daily Summary", **(params_dict.get("summary_table_widget") or {})
+        )
+        .map(argnames=["view", "data"], argvalues=persist_summary_table)
+    )
+
+    grouped_summary_table_widget = (
+        merge_widget_views.validate()
+        .set_task_instance_id("grouped_summary_table_widget")
+        .handle_errors()
+        .with_tracing()
+        .partial(
+            widgets=summary_table_widget,
+            **(params_dict.get("grouped_summary_table_widget") or {}),
+        )
+        .call()
+    )
+
     precipitation_chart = (
         draw_line_chart.validate()
         .set_task_instance_id("precipitation_chart")
@@ -343,7 +399,7 @@ def main(params: Params):
                 "legend_title": "Weather Station",
                 "hovermode": "closest",
             },
-            smoothing={"method": "spline", "y_min": 0},
+            smoothing={"method": "spline", "y_min": 0, "degree": 2},
             **(params_dict.get("precipitation_chart") or {}),
         )
         .mapvalues(argnames=["dataframe"], argvalues=daily_weather)
@@ -473,7 +529,6 @@ def main(params: Params):
                         "value": persist_precipitation,
                         "screenshot_config": {"wait_for_timeout": 0},
                     },
-                    {"item_type": "table", "key": "summary", "value": daily_weather},
                 ]
             },
             groupers=groupers,
@@ -491,7 +546,11 @@ def main(params: Params):
         .with_tracing()
         .partial(
             details=workflow_details,
-            widgets=[grouped_precipitation_widget, grouped_temperature_widget],
+            widgets=[
+                grouped_precipitation_widget,
+                grouped_temperature_widget,
+                grouped_summary_table_widget,
+            ],
             time_range=time_range,
             groupers=groupers,
             **(params_dict.get("climate_dashboard") or {}),

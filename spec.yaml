@@ -11,11 +11,15 @@ requirements:
     channel: https://repo.prefix.dev/ecoscope-workflows-custom/
 rjsf-overrides:
   $defs:
-    ValueGrouper.oneOf: [
+    ValueGrouper.properties.index_name.oneOf: [
       {"const": "weather_station", "title": "Weather Station"},
     ]
 
   properties:
+    groupers.properties.groupers.items.anyOf: [
+      {"$ref": "#/$defs/ValueGrouper"},
+      {"$ref": "#/$defs/TemporalGrouper"},
+    ]
     persist_observations.properties.filename_prefix.default: "observations"
     persist_daily_summary.properties.filename_prefix.default: "daily_summary"
     filtered_weather_station.properties.values.title: "Weather Station"
@@ -178,6 +182,43 @@ workflow:
       argnames: df
       argvalues: ${{ workflow.daily_weather.return }}
 
+  - name: Draw Summary Table
+    id: draw_summary_table
+    task: draw_table
+    partial:
+      table_config:
+        enable_sorting: true
+        enable_filtering: true
+        enable_download: true
+        hide_header: false
+    mapvalues:
+      argnames: dataframe
+      argvalues: ${{ workflow.daily_weather.return }}
+
+  - name: Persist Summary Table as Text
+    id: persist_summary_table
+    task: persist_text
+    partial:
+      root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+    mapvalues:
+      argnames: text
+      argvalues: ${{ workflow.draw_summary_table.return }}
+
+  - name: Create Summary Table Widget
+    id: summary_table_widget
+    task: create_table_widget_single_view
+    partial:
+      title: "Daily Summary"
+    map:
+      argnames: [view, data]
+      argvalues: ${{ workflow.persist_summary_table.return }}
+
+  - name: Merge Summary Table Widget Views
+    id: grouped_summary_table_widget
+    task: merge_widget_views
+    partial:
+      widgets: ${{ workflow.summary_table_widget.return }}
+
   - name: Draw Precipitation Chart
     id: precipitation_chart
     task: draw_line_chart
@@ -194,9 +235,10 @@ workflow:
           title: "Precipitation (mm)"
         legend_title: "Weather Station"
         hovermode: "closest"
-      smoothing: 
+      smoothing:
         method: spline
         y_min: 0
+        degree: 2
     mapvalues:
       argnames: dataframe
       argvalues: ${{ workflow.daily_weather.return }}
@@ -289,9 +331,6 @@ workflow:
             value: ${{ workflow.persist_precipitation.return }}
             screenshot_config:
               wait_for_timeout: 0
-          - item_type: table
-            key: summary
-            value: ${{ workflow.daily_weather.return }}
       groupers: ${{ workflow.groupers.return }}
       output_dir: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
       filename_prefix: climate_report
@@ -304,5 +343,6 @@ workflow:
       widgets:
         - ${{ workflow.grouped_precipitation_widget.return }}
         - ${{ workflow.grouped_temperature_widget.return }}
+        - ${{ workflow.grouped_summary_table_widget.return }}
       time_range: ${{ workflow.time_range.return}}
       groupers: ${{ workflow.groupers.return }}
