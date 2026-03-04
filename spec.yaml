@@ -147,6 +147,7 @@ workflow:
     task: persist_df_wrapper
     partial:
       root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
+      filetypes: ["parquet"]
       sanitize: true
     mapvalues:
       argnames: df
