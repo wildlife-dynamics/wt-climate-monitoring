@@ -329,9 +329,6 @@ def main(params: Params):
             .set_executor("lithops"),
             partial={
                 "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-                "filetypes": [
-                    "parquet",
-                ],
                 "sanitize": True,
             }
             | (params_dict.get("persist_observations") or {}),
@@ -381,9 +378,6 @@ def main(params: Params):
             .set_executor("lithops"),
             partial={
                 "root_path": os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-                "filetypes": [
-                    "csv",
-                ],
                 "sanitize": False,
             }
             | (params_dict.get("persist_daily_summary") or {}),

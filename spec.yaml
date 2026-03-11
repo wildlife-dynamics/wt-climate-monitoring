@@ -20,8 +20,13 @@ rjsf-overrides:
       {"$ref": "#/$defs/ValueGrouper"},
       {"$ref": "#/$defs/TemporalGrouper"},
     ]
+    subject_obs.properties.subject_group_name.default: "Subjects"
     persist_observations.properties.filename_prefix.default: "observations"
+    persist_observations.properties.filetypes.default: ["parquet"]
+    persist_observations.properties.filetypes.items.enum: ["csv", "parquet"]
     persist_daily_summary.properties.filename_prefix.default: "daily_summary"
+    persist_daily_summary.properties.filetypes.default: ["csv"]
+    persist_daily_summary.properties.filetypes.items.enum: ["csv", "parquet"]
     filtered_weather_station.properties.values.title: "Weather Station"
     filtered_weather_station.properties.values.description: >-
       Select the interested weather stations by subject names. If None, all weather stations in the subject group will be included. Note that we will always download all observations in the subject group before filtering.
@@ -147,7 +152,6 @@ workflow:
     task: persist_df_wrapper
     partial:
       root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
-      filetypes: ["parquet"]
       sanitize: true
     mapvalues:
       argnames: df
@@ -177,7 +181,6 @@ workflow:
     task: persist_df_wrapper
     partial:
       root_path: ${{ env.ECOSCOPE_WORKFLOWS_RESULTS }}
-      filetypes: ["csv"]
       sanitize: false
     mapvalues:
       argnames: df

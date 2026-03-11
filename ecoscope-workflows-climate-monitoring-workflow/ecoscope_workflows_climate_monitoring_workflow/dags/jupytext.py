@@ -467,6 +467,7 @@ split_weather_groups = (
 
 persist_observations_params = dict(
     filename=...,
+    filetypes=...,
     filename_prefix=...,
 )
 
@@ -480,7 +481,6 @@ persist_observations = (
     .with_tracing()
     .partial(
         root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-        filetypes=["parquet"],
         sanitize=True,
         **persist_observations_params,
     )
@@ -533,6 +533,7 @@ daily_weather = (
 
 persist_daily_summary_params = dict(
     filename=...,
+    filetypes=...,
     filename_prefix=...,
 )
 
@@ -546,7 +547,6 @@ persist_daily_summary = (
     .with_tracing()
     .partial(
         root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
-        filetypes=["csv"],
         sanitize=False,
         **persist_daily_summary_params,
     )

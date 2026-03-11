@@ -74,7 +74,8 @@
         "subject_group_name": {
           "title": "Subject Group Name",
           "type": "string",
-          "description": "\u26a0\ufe0f The use of a group with mixed subtypes could lead to unexpected results"
+          "description": "\u26a0\ufe0f The use of a group with mixed subtypes could lead to unexpected results",
+          "default": "Subjects"
         }
       },
       "required": [
@@ -128,6 +129,22 @@
     "persist_observations": {
       "additionalProperties": false,
       "properties": {
+        "filetypes": {
+          "default": [
+            "parquet"
+          ],
+          "items": {
+            "enum": [
+              "csv",
+              "parquet"
+            ],
+            "type": "string"
+          },
+          "title": "Filetypes",
+          "type": "array",
+          "description": "The output format",
+          "uniqueItems": true
+        },
         "filename_prefix": {
           "default": "observations",
           "title": "Filename Prefix",
@@ -143,6 +160,22 @@
     "persist_daily_summary": {
       "additionalProperties": false,
       "properties": {
+        "filetypes": {
+          "default": [
+            "csv"
+          ],
+          "items": {
+            "enum": [
+              "csv",
+              "parquet"
+            ],
+            "type": "string"
+          },
+          "title": "Filetypes",
+          "type": "array",
+          "description": "The output format",
+          "uniqueItems": true
+        },
         "filename_prefix": {
           "default": "daily_summary",
           "title": "Filename Prefix",
@@ -324,6 +357,18 @@
         "since",
         "until",
         "timezone"
+      ]
+    },
+    "persist_observations": {
+      "ui:order": [
+        "filetypes",
+        "filename_prefix"
+      ]
+    },
+    "persist_daily_summary": {
+      "ui:order": [
+        "filetypes",
+        "filename_prefix"
       ]
     },
     "ui:order": [

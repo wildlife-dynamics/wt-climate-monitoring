@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from enum import Enum
 from typing import List, Optional, Union
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -39,9 +40,19 @@ class FilteredWeatherStation(BaseModel):
     )
 
 
+class Filetype(str, Enum):
+    csv = "csv"
+    gpkg = "gpkg"
+    geoparquet = "geoparquet"
+    parquet = "parquet"
+
+
 class PersistObservations(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
+    )
+    filetypes: Optional[List[Filetype]] = Field(
+        ["csv"], description="The output format", title="Filetypes"
     )
     filename_prefix: Optional[str] = Field(
         None,
@@ -53,6 +64,9 @@ class PersistObservations(BaseModel):
 class PersistDailySummary(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
+    )
+    filetypes: Optional[List[Filetype]] = Field(
+        ["csv"], description="The output format", title="Filetypes"
     )
     filename_prefix: Optional[str] = Field(
         None,
