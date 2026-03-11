@@ -38,18 +38,9 @@ class FilteredWeatherStation(BaseModel):
     )
 
 
-class Filetype(str, Enum):
-    csv = "csv"
-    gpkg = "gpkg"
-    geoparquet = "geoparquet"
-
-
 class PersistObservations(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
-    )
-    filetypes: list[Filetype] | None = Field(
-        ["csv"], description="The output format", title="Filetypes"
     )
     filename_prefix: str | None = Field(
         "observations",

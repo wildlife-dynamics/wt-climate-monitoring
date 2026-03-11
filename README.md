@@ -8,7 +8,7 @@ This workflow helps you to monitor climate conditions, including temperature and
 - Downloads climate observation data captured by **TAMHO** sensors from EarthRanger.
 - Processes observations including temperature and precipitation measurements
 - Calculates daily summaries (total precipitation and average temperature)
-- Exports data in multiple formats (CSV, GeoParquet, GPKG)
+- Exports data in multiple formats (CSV, Parquet)
 - Creates interactive charts showing precipitation and temperature trends over time
 - Generates a downloadable Climate Report (Word document) with charts and data summary
 
@@ -101,8 +101,7 @@ Choose how to save your raw observation data with normalized observation details
 
 - **Filetypes**: Select one or more output formats
   - **CSV**: Standard spreadsheet format, opens in Excel
-  - **GeoParquet**: Efficient format for geospatial data
-  - **GPKG**: GeoPackage format, opens in GIS software like QGIS
+  - **Parquet**: Efficient format for geospatial data
   - Example: Select `CSV` (default)
 
 #### 8. Persist Daily Summary
@@ -168,12 +167,11 @@ Your climate data will be saved in the format(s) you selected:
 
 #### Raw Observations Data
 
-- **File formats**: CSV, GeoParquet, and/or GPKG (based on your selection)
-- **Opens in**: Microsoft Excel, Google Sheets (CSV), Python/R (GeoParquet), QGIS/ArcGIS (GPKG)
+- **File formats**: CSV or Parquet (based on your selection)
+- **Opens in**: Microsoft Excel, Google Sheets (CSV), Python/R (Parquet)
 - **Best for**:
   - CSV: Quick data review and analysis
-  - GeoParquet: Large datasets, programmatic analysis
-  - GPKG: Spatial analysis in GIS software
+  - Parquet: Large datasets, programmatic analysis
 - **Contents**: All weather observation data with normalized observation details including:
   - `weather_station`: Name of the weather station (subject name)
   - `recorded_at`: Timestamp when the observation was recorded
@@ -266,10 +264,10 @@ Here are some typical scenarios and how to configure the workflow for each:
   - Timezone: `UTC (UTC+00:00)`
 - **Subject Group Name**: `"Subjects"`
 - **Select Weather Stations**: `["TA00569- Mara Triangle", "TA00570- Naboisho Conservancy", "TA00825- Mara North Conservancy"]`
-- **Filetypes**: Select `CSV` and `GeoParquet`
+- **Filetypes**: Select `CSV` and `Parquet`
 
 **Result**:
-- CSV and GeoParquet files with observations from only the three selected stations
+- CSV and Parquet files with observations from only the three selected stations
 - Daily summary CSV for those stations
 - Dashboard charts comparing the three stations
 - Climate report with charts and summary for selected stations

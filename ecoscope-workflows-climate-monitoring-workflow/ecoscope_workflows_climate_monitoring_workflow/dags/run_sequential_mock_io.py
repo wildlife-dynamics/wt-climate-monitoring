@@ -286,6 +286,7 @@ def main(params: Params):
         .with_tracing()
         .partial(
             root_path=os.environ["ECOSCOPE_WORKFLOWS_RESULTS"],
+            filetypes=["parquet"],
             sanitize=True,
             **(params_dict.get("persist_observations") or {}),
         )

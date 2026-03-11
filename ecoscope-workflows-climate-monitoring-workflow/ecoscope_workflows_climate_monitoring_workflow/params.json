@@ -131,23 +131,6 @@
     "persist_observations": {
       "additionalProperties": false,
       "properties": {
-        "filetypes": {
-          "default": [
-            "csv"
-          ],
-          "items": {
-            "enum": [
-              "csv",
-              "gpkg",
-              "geoparquet"
-            ],
-            "type": "string"
-          },
-          "title": "Filetypes",
-          "type": "array",
-          "description": "The output format",
-          "uniqueItems": true
-        },
         "filename_prefix": {
           "default": null,
           "title": "Filename Prefix",
@@ -338,12 +321,6 @@
         "since",
         "until",
         "timezone"
-      ]
-    },
-    "persist_observations": {
-      "ui:order": [
-        "filetypes",
-        "filename_prefix"
       ]
     },
     "ui:order": [
